@@ -33,7 +33,7 @@ else
     {
         <div class="book-card">
             <div class="cover-wrapper">
-                <img src="" alt="@book.Title" />
+                <img src="@book.ImageUrl" alt="@book.Title" />
             </div>
             <div class="book-info">
                 <h3 title="@book.Title">@book.Title</h3>
@@ -87,7 +87,8 @@ else
                     Title = b.Title,
                     Author = b.Author,
                     Price = b.Price,
-                    Description = b.Description
+                    Description = b.Description,
+                    ImageUrl = b.ImageUrl
                 }).ToList();
 
         }
