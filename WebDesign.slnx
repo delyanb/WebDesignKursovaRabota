@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="../WebDesignAPI/WebDesignAPI/WebDesignAPI.csproj" />
   <Project Path="WebDesign/WebDesign.csproj" />
+  <Project Path="WebDesignAPI/WebDesignAPI.csproj" />
 </Solution>
