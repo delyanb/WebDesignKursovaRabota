@@ -1,0 +1,124 @@
+﻿@page "/books"
+@using System.Globalization
+@inject HttpClient Http
+
+
+<h1 class="page-title">Browse Books</h1>
+
+
+<div class="toolbar">
+    <input class="search" placeholder="Search by title or author" @bind="SearchTerm" @bind:event="oninput" />
+    <select class="sort" @bind="SortBy">
+        <option value="title">Title</option>
+        <option value="author">Author</option>
+        <option value="price">Price</option>
+    </select>
+</div>
+
+
+<div class="book-grid">
+    @foreach (var book in FilteredBooks)
+    {
+        <div class="book-card">
+            <div class="cover-wrapper">
+                <img src="" alt="@book.Title" />
+            </div>
+            <div class="book-info">
+                <h3 title="@book.Title">@book.Title</h3>
+                <p class="author">@book.Author</p>
+                <div class="bottom-row">
+                    <span class="price">@book.Price.ToString("C", CultureInfo.CurrentCulture)</span>
+                    <a class="details-btn" href="/books/@book.Id">Details</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@code {
+    private string SearchTerm = string.Empty;
+    private string SortBy = "title";
+    private bool IsLoading = true;
+
+
+    private List<Book> Books = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        IsLoading = false;
+        try
+        {
+
+            var booksResponse  = await Http.GetFromJsonAsync<WebDesignAPI.Models.GetAllBooksResponse>("https://localhost:7078/Books");
+
+            if(booksResponse == null)
+            {
+                //да измислим
+            }
+            if(booksResponse.Success == false)
+            {
+                //да измислим
+            }
+            if(booksResponse.Books == null)
+            {
+                //да измислим
+            }
+
+            Books = booksResponse!.Books!.Select(b => new Book
+                {
+                    Id = b.Id,
+                    Title = b.Title,
+                    Author = b.Author,
+                    Price = b.Price,
+                    Description = b.Description
+                }).ToList();
+
+
+
+
+
+        }
+        catch (Exception ex)
+        {
+            // да измислим 
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+
+    private IEnumerable<Book> FilteredBooks =>
+    Sort(Books.Where(b =>
+    string.IsNullOrWhiteSpace(SearchTerm) ||
+    b.Title.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+    b.Author.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)
+    ));
+
+
+    private IEnumerable<Book> Sort(IEnumerable<Book> books) => SortBy switch
+    {
+        "author" => books.OrderBy(b => b.Author),
+        "price" => books.OrderBy(b => b.Price),
+        _ => books.OrderBy(b => b.Title)
+    };
+
+
+    private void AddToCart(Book book)
+    {
+       //??
+    }
+
+
+    private class Book
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Author { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public string Description { get; set; } = string.Empty;
+    }
+}

@@ -1,0 +1,76 @@
+﻿@page "/books/{BookId:int}"
+@inject HttpClient Http
+@using System.Globalization
+
+<h1>Book Details</h1>
+
+@if (IsLoading)
+{
+    <p>Loading...</p>
+}
+else if (Error != null)
+{
+    <p class="text-danger">@Error</p>
+}
+else if (GivenBook != null)
+{
+    <div class="book-details">
+        <h2>@GivenBook.Title</h2>
+        <p><strong>Author:</strong> @GivenBook.Author</p>
+        <p><strong>Price:</strong> @GivenBook.Price.ToString("C", CultureInfo.CurrentCulture)</p>
+        <p><strong>Description:</strong> @GivenBook.Description</p>
+        <a href="/books" class="btn btn-secondary">Back to list</a>
+    </div>
+}
+else
+{
+    <p>Book not found.</p>
+}
+
+@code {
+    [Parameter]
+    public int BookId { get; set; }
+
+    private Book? GivenBook { get; set; }
+    private bool IsLoading { get; set; } = true;
+    private string? Error { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+        try
+        {
+            var response = await Http.GetFromJsonAsync<WebDesignAPI.Models.GetBookByIdResponse>($"https://localhost:7078/Books/{BookId}");
+
+            if (response == null) { }//да измислим
+            if (!response.Success) { }//да измислим
+            if (response.Book == null) { } //да измислим
+
+            GivenBook = new Book()
+            {
+                Author = response.Book.Author,
+                Description = response.Book.Description,
+                Id = response.Book.Id,
+                Title = response.Book.Title,
+                Price = response.Book.Price
+            };
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    public class Book
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Author { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public string Description { get; set; } = string.Empty;
+    }
+}
