@@ -17,11 +17,13 @@ namespace WebDesignAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<GetAllBooksResponse> GetAllBooks()
+        public async Task<GetAllBooksResponse> GetAllBooksAsync()
         {
             GetAllBooksResponse response = new();
             try
             {
+
+                await Task.Delay(1500);
                 var books = await Task.Run(()=>_bookService.GetAllBooks()?.ToList());
                 if (books == null || books.Count == 0)
                 {
@@ -41,12 +43,13 @@ namespace WebDesignAPI.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<GetBookByIdResponse> GetBookById(int id)
+        public async Task<GetBookByIdResponse> GetBookByIdAsync(int id)
         {
 
             GetBookByIdResponse response = new();
             try
             {
+                await Task.Delay(1500);
                 var book = await Task.Run(() => _bookService.GetBookById(id));
                 if (book == null)
                 {

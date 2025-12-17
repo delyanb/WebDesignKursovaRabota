@@ -1,6 +1,7 @@
 ﻿@page "/books/{BookId:int}"
 @inject HttpClient Http
 @using System.Globalization
+@using Models
 
 <h1>Book Details</h1>
 
@@ -42,9 +43,12 @@ else
         {
             var response = await Http.GetFromJsonAsync<WebDesignAPI.Models.GetBookByIdResponse>($"https://localhost:7078/Books/{BookId}");
 
-            if (response == null) { }//да измислим
-            if (!response.Success) { }//да измислим
-            if (response.Book == null) { } //да измислим
+            if (response == null || !response.Success || response.Book == null) 
+            { 
+                Error = "Error retrieving book data.";
+                IsLoading = false;
+                return;
+            }
 
             GivenBook = new Book()
             {
@@ -65,12 +69,5 @@ else
         }
     }
 
-    public class Book
-    {
-        public int Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Author { get; set; } = string.Empty;
-        public decimal Price { get; set; }
-        public string Description { get; set; } = string.Empty;
-    }
+
 }

@@ -1,11 +1,23 @@
 ﻿@page "/books"
 @using System.Globalization
+@using Models
 @inject HttpClient Http
+
+
 
 
 <h1 class="page-title">Browse Books</h1>
 
-
+@if (IsLoading)
+{
+    <h1>Loading...</h1>
+}
+else if (Error != null)
+{
+    <h1>Error</h1>
+}
+else
+{
 <div class="toolbar">
     <input class="search" placeholder="Search by title or author" @bind="SearchTerm" @bind:event="oninput" />
     <select class="sort" @bind="SortBy">
@@ -34,12 +46,15 @@
         </div>
     }
 </div>
+    
+}
 
 
 @code {
     private string SearchTerm = string.Empty;
     private string SortBy = "title";
     private bool IsLoading = true;
+    private string? Error;
 
 
     private List<Book> Books = new();
@@ -47,24 +62,24 @@
     protected override async Task OnInitializedAsync()
     {
 
-        IsLoading = false;
+        IsLoading = true;
         try
         {
 
             var booksResponse  = await Http.GetFromJsonAsync<WebDesignAPI.Models.GetAllBooksResponse>("https://localhost:7078/Books");
 
-            if(booksResponse == null)
+            if (booksResponse == null || booksResponse.Books == null)
             {
-                //да измислим
+                Error = "Failed loading page";
+                return;
             }
-            if(booksResponse.Success == false)
+            if (!booksResponse.Success)
             {
-                //да измислим
+                Error = booksResponse.ErrorMessage;
+                return;
             }
-            if(booksResponse.Books == null)
-            {
-                //да измислим
-            }
+
+            Error = null;
 
             Books = booksResponse!.Books!.Select(b => new Book
                 {
@@ -75,14 +90,10 @@
                     Description = b.Description
                 }).ToList();
 
-
-
-
-
         }
         catch (Exception ex)
         {
-            // да измислим 
+            Error = ex.Message;
         }
         finally
         {
@@ -110,15 +121,5 @@
     private void AddToCart(Book book)
     {
        //??
-    }
-
-
-    private class Book
-    {
-        public int Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Author { get; set; } = string.Empty;
-        public decimal Price { get; set; }
-        public string Description { get; set; } = string.Empty;
     }
 }
