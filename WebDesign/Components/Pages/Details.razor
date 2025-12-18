@@ -20,7 +20,7 @@ else if (GivenBook != null)
         <p><strong>Author:</strong> @GivenBook.Author</p>
         <p><strong>Price:</strong> @GivenBook.Price.ToString("C", CultureInfo.CurrentCulture)</p>
         <p><strong>Description:</strong> @GivenBook.Description</p>
-        <a href="/books" class="btn btn-secondary">Back to list</a>
+        <a href="@BackUrl" class="btn btn-secondary">Back to list</a>
     </div>
 }
 else
@@ -31,6 +31,18 @@ else
 @code {
     [Parameter]
     public int BookId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "from")]
+    public string? FromPage { get; set; }
+
+    private string BackUrl => FromPage switch
+    {
+        "best-sellers" => "/best-sellers",
+        "books" => "/books",
+        _ => "/books"
+    };
+
 
     private Book? GivenBook { get; set; }
     private bool IsLoading { get; set; } = true;

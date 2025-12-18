@@ -36,5 +36,47 @@ namespace WebDesignAPI.Services
         {
             return _books.FirstOrDefault(b => b.Id == id);
         }
+
+        public List<BestSellerBookDto>? GetTopBestSellers()
+        {
+
+
+            var books = GetAllBooks()?.ToList();
+
+            var random = new Random();
+
+                var usernames = new[]
+                {
+                "dev_john", "codeQueen", "blazorFan", "dotnet_guy",
+                "bookworm42", "asyncMaster", "frontendNinja"
+            };
+
+                var comments = new[]
+                {
+                "Amazing book, highly recommended!",
+                "Helped me a lot in my daily work.",
+                "A must-read for every developer.",
+                "Very well written and easy to understand.",
+                "One of the best technical books I've read.",
+                "Good concepts, but requires focus."
+            };
+            return [.. books
+          .OrderBy(_ => random.Next())
+          .Take(5)
+          .Select(book => new BestSellerBookDto
+          {
+              Book = book,
+              SoldThisWeek = random.Next(20, 250),
+              Comments = Enumerable.Range(0, 2)
+                  .Select(_ => new BookCommentDto
+                  {
+                      Username = usernames[random.Next(usernames.Length)],
+                      Comment = comments[random.Next(comments.Length)]
+                  })
+                  .ToList()
+          })
+          .OrderByDescending(b => b.SoldThisWeek)];
+
+        }
     }
 }

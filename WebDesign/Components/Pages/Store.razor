@@ -40,7 +40,7 @@ else
                 <p class="author">@book.Author</p>
                 <div class="bottom-row">
                     <span class="price">@book.Price.ToString("C", CultureInfo.CurrentCulture)</span>
-                    <a class="details-btn" href="/books/@book.Id">Details</a>
+                        <a class="details-btn" href="/books/@book.Id?from=books">Details</a>
                 </div>
             </div>
         </div>

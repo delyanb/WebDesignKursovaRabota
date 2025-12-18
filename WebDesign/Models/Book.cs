@@ -10,4 +10,28 @@
         public string Description { get; set; } = string.Empty;
         public string ImageUrl { get; set; } = string.Empty;
     }
+
+    public class GetTopBestSellersResponse
+    {
+        public bool Success { get; set; }
+        public string? ErrorMessage { get; set; }
+        public List<BestSellerBook> BestSellers { get; set; } = [];
+    }
+
+
+    public class BestSellerBook
+    {
+        public Book Book { get; set; } = null!;
+        public int SoldThisWeek { get; set; }
+        public List<BookComment> Comments { get; set; } = [];
+    }
+
+
+    public class BookComment
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Comment { get; set; } = string.Empty;
+    }
+
+
 }

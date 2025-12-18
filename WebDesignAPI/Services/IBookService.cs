@@ -6,5 +6,7 @@ namespace WebDesignAPI.Services
     {
         IEnumerable<Book> GetAllBooks();
         Book? GetBookById(int id);
+
+        List<BestSellerBookDto>? GetTopBestSellers();
     }
 }

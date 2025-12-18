@@ -1,0 +1,91 @@
+﻿@page "/best-sellers"
+@using WebDesign.Models
+@inject HttpClient Http
+
+
+<h1 class="page-title">🔥 Best Sellers This Week</h1>
+
+
+@if (IsLoading)
+{
+    <p class="loading">Loading best sellers...</p>
+}
+else if (!string.IsNullOrEmpty(Error))
+{
+    <p class="error">@Error</p>
+}
+else
+{
+    <div class="best-seller-grid">
+        @foreach (var item in bestSellers)
+    {
+        <div class="best-seller-card">
+        <img src="@item.Book.Author" alt="@item.Book.Title" />
+
+
+        <h3>@item.Book.Title</h3>
+        <p class="author">@item.Book.Author</p>
+
+
+        <p class="sales">Sold this week: <strong>@item.SoldThisWeek</strong></p>
+
+
+        <div class="comments">
+        <h4>Comments</h4>
+        @foreach (var comment in item.Comments)
+        {
+            <div class="comment">
+            <span class="user">@comment.Username</span>
+            <p>@comment.Comment</p>
+            </div>
+        }
+        </div>
+        <a class="details-btn" href="/books/@item.Book.Id?from=best-sellers">View details</a>
+        </div>
+    }   
+    </div>
+}    
+
+
+
+@code {
+    private bool IsLoading = true;
+    private string? Error;
+
+
+    private List<BestSellerBook>? bestSellers;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (bestSellers is not null)
+                return;
+
+            var response = await Http.GetFromJsonAsync<GetTopBestSellersResponse>(
+            "https://localhost:7078/Books/best-sellers"
+            );
+
+
+            if (response == null || !response.Success)
+            {
+                Error = response?.ErrorMessage ?? "Unknown error.";
+                return;
+            }
+
+
+            bestSellers = response.BestSellers;
+
+
+        }
+        catch (Exception ex)
+        {
+            Error = ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+    }
