@@ -103,6 +103,7 @@ namespace WebDesignAPI.Controllers
                 }
 
                 await Task.Delay(1500);
+
                 var bestSellersList = await Task.Run(() => _bookService.GetTopBestSellers());
 
                 if(bestSellersList == null || bestSellersList.Count == 0)

@@ -1,8 +1,11 @@
-using WebDesign.Components;
 using System.Net.Http;
+using WebDesign.Components;
+using WebDesign.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddScoped<PageHeaderService>();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

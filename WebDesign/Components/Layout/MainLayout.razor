@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@inject PageHeaderService HeaderService
+@using Microsoft.AspNetCore.Components.Routing
+@using WebDesign.Services
 
 <div class="page">
     <div class="sidebar">
@@ -6,10 +9,9 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <div class="top-row px-4 d-flex align-items-center justify-content-center">
+            <h1 class="page-header mb-0">@HeaderService.Title</h1>
         </div>
-
         <article class="content px-4">
             @Body
         </article>
@@ -21,3 +23,16 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    [CascadingParameter] public string? PageHeader { get; set; }
+
+    protected override void OnInitialized()
+    {
+        HeaderService.OnChange += StateHasChanged;
+    }
+    public void Dispose()
+    {
+        HeaderService.OnChange -= StateHasChanged;
+    }
+}
